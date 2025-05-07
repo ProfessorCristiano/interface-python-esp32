@@ -13,7 +13,7 @@ import serial
 class ESP32InterfaceApp:
     def __init__(self, root):
         corprincipal= "#1a1a1a"  # Cor principal (preto)
-        cordecontraste= "#ffc500"  # Cor de contraste (dourado)
+        cordecontraste= "#ffa500"  # Cor de contraste (dourado)
         cordesabilitado= "#808080"  # Cor desabilitada (cinza)
         self.root = root
         self.root.title("ESP32 Interface")
