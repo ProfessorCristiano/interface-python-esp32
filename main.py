@@ -117,12 +117,6 @@ class ESP32InterfaceApp:
         # Adcionar um botão switch para conexão
         self.serial_label = tk.Label(self.info_frame, text="Serial:", bg=corprincipal, fg=cordecontraste, font=("Consolas", 10))
         self.serial_label.grid(row=1, column=0, pady=5)
-        
-        
-        #self.switch_button = tk.Button(self.infoframe, text='OFF', command=self.toggle_switch, bg='red', fg='white', font=("Consolas", 10), relief=tk.FLAT)
-        #self.switch_button.grid(row=1, column=1, pady=5)
-
-
         self.switch_button = tk.Button(self.info_frame, text='OFF', command=self.toggle_switch, bg='red', fg='white', font=("Consolas", 10), relief=tk.FLAT)
         self.switch_button.grid(row=1, column=1, pady=5)
         
