@@ -215,8 +215,12 @@ class ESP32InterfaceApp:
     def toggle_switch(self):
         if self.switch_button.config('text')[-1] == 'OFF':
             self.switch_button.config(text='ON', bg='green')
+            # Substitua pela porta correta
+            #porta = 'COM3' 
+            #self.ser = conectar_esp32(porta) # Conecta no ESP32
         else:
             self.switch_button.config(text='OFF', bg='red')
+            #self.ser.close() # Fecha a conexão
 
 
 
@@ -246,10 +250,6 @@ class ESP32InterfaceApp:
 
 #CARREGA A FUNÇÃO PRINCIPAL
 if __name__ == "__main__":
-    porta = 'COM3'  			# Substitua pela porta correta
-    ser = conectar_esp32(porta) # Conecta no ESP32
-    
-    #ser.close() # Fecha a conexão
     
     # abre a Interface
     root = tk.Tk()
