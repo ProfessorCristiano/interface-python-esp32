@@ -9,6 +9,59 @@
 import tkinter as tk
 from tkinter import scrolledtext
 import serial
+import time
+
+# Função para se conectar ao ESP32 via comunicação serial
+def conectar_esp32(porta, baudrate=9600):
+    try:
+        ser = serial.Serial(porta, baudrate)
+        print(f"Conectado ao ESP32 na porta {porta} com baudrate {baudrate}")
+        return ser
+    except serial.SerialException as e:
+        print(f"Erro ao conectar ao ESP32: {e}")
+        return None
+
+# Função para monitorar e receber informações de distância, temperatura e umidade
+def monitorar_sensores(ser):
+    if ser and ser.is_open:
+        ser.write(b'GET_SENSORS\n')  # Envia comando para obter dados dos sensores
+        time.sleep(1)
+        if ser.in_waiting > 0:
+            dados = ser.readline().decode('utf-8').strip()
+            print(f"Dados dos sensores: {dados}")
+            return dados
+    else:
+        print("Conexão serial não está aberta.")
+        return None
+
+# Função para receber dados em forma de texto
+def receber_dados_texto(ser):
+    if ser and ser.is_open:
+        ser.write(b'GET_TEXT\n')  # Envia comando para obter dados em texto
+        time.sleep(1)
+        if ser.in_waiting > 0:
+            texto = ser.readline().decode('utf-8').strip()
+            print(f"Dados recebidos: {texto}")
+            return texto
+    else:
+        print("Conexão serial não está aberta.")
+        return None
+
+# Função para enviar uma sequência de caracteres até ser dado ENTER
+def enviar_sequencia(ser, sequencia):
+    if ser and ser.is_open:
+        ser.write(sequencia.encode('utf-8') + b'\n')  # Envia a sequência de caracteres seguida de ENTER
+        print(f"Sequência enviada: {sequencia}")
+    else:
+        print("Conexão serial não está aberta.")
+
+
+
+
+
+
+
+
 
 class ESP32InterfaceApp:
     def __init__(self, root):
@@ -60,40 +113,53 @@ class ESP32InterfaceApp:
         self.info_frame.grid(row=0, column=2, rowspan=5, padx=10, pady=10)
         self.info_label = tk.Label(self.info_frame, text="Informações Personalizadas", bg=corprincipal, fg=cordecontraste, font=("Consolas", 12))
         self.info_label.grid(row=0, column=0, pady=10)
+        
+        # Adcionar um botão switch para conexão
+        self.serial_label = tk.Label(self.info_frame, text="Serial:", bg=corprincipal, fg=cordecontraste, font=("Consolas", 10))
+        self.serial_label.grid(row=1, column=0, pady=5)
+        
+        
+        #self.switch_button = tk.Button(self.infoframe, text='OFF', command=self.toggle_switch, bg='red', fg='white', font=("Consolas", 10), relief=tk.FLAT)
+        #self.switch_button.grid(row=1, column=1, pady=5)
+
+
+        self.switch_button = tk.Button(self.info_frame, text='OFF', command=self.toggle_switch, bg='red', fg='white', font=("Consolas", 10), relief=tk.FLAT)
+        self.switch_button.grid(row=1, column=1, pady=5)
+        
         # Adicionar uma label para distância e uma caixa de texto para exibir a distância
         self.distance_label = tk.Label(self.info_frame, text="Distância:", bg=corprincipal, fg=cordecontraste, font=("Consolas", 10))
-        self.distance_label.grid(row=1, column=0, pady=5)
+        self.distance_label.grid(row=2, column=0, pady=5)
         self.distance_value = tk.Label(self.info_frame, text="0 cm", bg=corprincipal, fg=cordecontraste, font=("Consolas", 10))
-        self.distance_value.grid(row=1, column=1, pady=5)
+        self.distance_value.grid(row=2, column=1, pady=5)
         # Adicionar uma label para temperatura e uma caixa de texto para exibir a temperatura
         self.temperature_label = tk.Label(self.info_frame, text="Temperatura:", bg=corprincipal, fg=cordecontraste, font=("Consolas", 10))
-        self.temperature_label.grid(row=2, column=0, pady=5)
+        self.temperature_label.grid(row=3, column=0, pady=5)
         self.temperature_value = tk.Label(self.info_frame, text="0 °C", bg=corprincipal, fg=cordecontraste, font=("Consolas", 10))
-        self.temperature_value.grid(row=2, column=1, pady=5)
+        self.temperature_value.grid(row=3, column=1, pady=5)
         # Adicionar uma label para umidade e uma caixa de texto para exibir a umidade
         self.humidity_label = tk.Label(self.info_frame, text="Umidade:", bg=corprincipal, fg=cordecontraste, font=("Consolas", 10))
-        self.humidity_label.grid(row=3, column=0, pady=5)
+        self.humidity_label.grid(row=4, column=0, pady=5)
         self.humidity_value = tk.Label(self.info_frame, text="0 %", bg=corprincipal, fg=cordecontraste, font=("Consolas", 10))
-        self.humidity_value.grid(row=3, column=1, pady=5)
+        self.humidity_value.grid(row=4, column=1, pady=5)
         # Adicionar uma label para LEDs e três labels para os LEDs
         self.humidity_label = tk.Label(self.info_frame, text="Leds indicativos:", bg=corprincipal, fg=cordecontraste, font=("Consolas", 10))
-        self.humidity_label.grid(row=4, column=0, rowspan=3, pady=5)
+        self.humidity_label.grid(row=5, column=0, rowspan=3, pady=5)
         # Adiciona três Labels uma do lado da outra, bem próximas, ainda dentro do frame de informações com nomes LED1 LED2 LED3
         # E abaixo dessas labels um botão sem nada escrito para simular o botão de ligar e desligar, um Azul, Um Amarelo e um Vermelho, 
         # Quando Desabilitados ficarão todos cinzas
         self.led1_label = tk.Label(self.info_frame, text="LED1", bg=corprincipal, fg=cordecontraste, font=("Consolas", 10))
-        self.led1_label.grid(row=4, column=1, pady=5)
+        self.led1_label.grid(row=5, column=1, pady=5)
         self.led2_label = tk.Label(self.info_frame, text="LED2", bg=corprincipal, fg=cordecontraste, font=("Consolas", 10))
-        self.led2_label.grid(row=4, column=2, pady=5)
+        self.led2_label.grid(row=5, column=2, pady=5)
         self.led3_label = tk.Label(self.info_frame, text="LED3", bg=corprincipal, fg=cordecontraste, font=("Consolas", 10))
-        self.led3_label.grid(row=4, column=3, pady=5)
+        self.led3_label.grid(row=5, column=3, pady=5)
         # Adiciona três botões para ligar e desligar os LEDs
         self.led1_button = tk.Button(self.info_frame, text="", command=lambda: self.toggle_led(1), bg=cordesabilitado, fg=cordesabilitado, font=("Consolas", 10), relief=tk.FLAT)
-        self.led1_button.grid(row=5, column=1, padx=5, pady=5)
+        self.led1_button.grid(row=6, column=1, padx=5, pady=5)
         self.led2_button = tk.Button(self.info_frame, text="", command=lambda: self.toggle_led(2), bg=cordesabilitado, fg=cordesabilitado, font=("Consolas", 10), relief=tk.FLAT)
-        self.led2_button.grid(row=5, column=2, padx=5, pady=5)
+        self.led2_button.grid(row=6, column=2, padx=5, pady=5)
         self.led3_button = tk.Button(self.info_frame, text="", command=lambda: self.toggle_led(3), bg=cordesabilitado, fg=cordesabilitado, font=("Consolas", 10), relief=tk.FLAT)
-        self.led3_button.grid(row=5, column=3, padx=5, pady=5)
+        self.led3_button.grid(row=6, column=3, padx=5, pady=5)
         
 
         # Configuração da comunicação serial (ajuste conforme necessário)
@@ -144,6 +210,14 @@ class ESP32InterfaceApp:
         else:
             self.log_message("Erro: Porta serial não está conectada.")   
 
+    
+    
+    def toggle_switch(self):
+        if self.switch_button.config('text')[-1] == 'OFF':
+            self.switch_button.config(text='ON', bg='green')
+        else:
+            self.switch_button.config(text='OFF', bg='red')
+
 
 
     def send_command(self):
@@ -169,7 +243,15 @@ class ESP32InterfaceApp:
         self.receive_data()
         self.root.mainloop()
 
+
+#CARREGA A FUNÇÃO PRINCIPAL
 if __name__ == "__main__":
+    porta = 'COM3'  			# Substitua pela porta correta
+    ser = conectar_esp32(porta) # Conecta no ESP32
+    
+    #ser.close() # Fecha a conexão
+    
+    # abre a Interface
     root = tk.Tk()
     app = ESP32InterfaceApp(root)
     app.run()
