@@ -110,15 +110,18 @@ class ESP32InterfaceApp:
 
         # Novo frame a direita para informações personalizadas
         self.info_frame = tk.Frame(root, bg=corprincipal)
-        self.info_frame.grid(row=0, column=2, rowspan=5, padx=10, pady=10)
+        self.info_frame.grid(row=0, column=2, rowspan=6, padx=10, pady=10)
         self.info_label = tk.Label(self.info_frame, text="Informações Personalizadas", bg=corprincipal, fg=cordecontraste, font=("Consolas", 12))
         self.info_label.grid(row=0, column=0, pady=10)
         
         # Adcionar um botão switch para conexão
         self.serial_label = tk.Label(self.info_frame, text="Serial:", bg=corprincipal, fg=cordecontraste, font=("Consolas", 10))
         self.serial_label.grid(row=1, column=0, pady=5)
-        self.switch_button = tk.Button(self.info_frame, text='OFF', command=self.toggle_switch, bg='red', fg='white', font=("Consolas", 10), relief=tk.FLAT)
-        self.switch_button.grid(row=1, column=1, pady=5)
+        self.serial_label = tk.Label(self.info_frame, text="", width=6, bg=cordesabilitado, fg=cordecontraste, font=("Consolas", 10))
+        self.serial_label.grid(row=1, column=1, pady=5, columnspan=2 )
+        self.switch_button = tk.Button(self.info_frame, text='OFF', width=3, height=1, command=self.toggle_switch, bg='red', fg='white', font=("Consolas", 10), relief=tk.FLAT)
+        self.switch_button.grid(row=1, column=2, pady=5)
+        
         
         # Adicionar uma label para distância e uma caixa de texto para exibir a distância
         self.distance_label = tk.Label(self.info_frame, text="Distância:", bg=corprincipal, fg=cordecontraste, font=("Consolas", 10))
@@ -209,11 +212,13 @@ class ESP32InterfaceApp:
     def toggle_switch(self):
         if self.switch_button.config('text')[-1] == 'OFF':
             self.switch_button.config(text='ON', bg='green')
+            self.switch_button.grid(row=1, column=1)
             # Substitua pela porta correta
             #porta = 'COM3' 
             #self.ser = conectar_esp32(porta) # Conecta no ESP32
         else:
             self.switch_button.config(text='OFF', bg='red')
+            self.switch_button.grid(row=1, column=2)
             #self.ser.close() # Fecha a conexão
 
 
