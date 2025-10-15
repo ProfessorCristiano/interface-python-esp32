@@ -5,6 +5,7 @@
 # Este programa é um exemplo de interface gráfica para comunicação com um ESP32.
 # Ele utiliza a biblioteca Tkinter para criar a interface e a biblioteca pyserial para comunicação serial.
 
+# pip install pyserial
 
 import tkinter as tk
 from tkinter import scrolledtext
@@ -254,3 +255,4 @@ if __name__ == "__main__":
     root = tk.Tk()
     app = ESP32InterfaceApp(root)
     app.run()
+
