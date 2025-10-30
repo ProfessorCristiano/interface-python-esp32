@@ -1,16 +1,27 @@
 # Programa para interface gráfica com ESP32
 # Criado por Professor Cristiano Teixeira
 # Data: 2023-10-01
+# Versão 2.1 de 2025-10-29
 # Licença: Apache-2.0
 # Este programa é um exemplo de interface gráfica para comunicação com um ESP32.
 # Ele utiliza a biblioteca Tkinter para criar a interface e a biblioteca pyserial para comunicação serial.
 
-# pip install pyserial
+#pip install pyserial
 
 import tkinter as tk
 from tkinter import scrolledtext
 import serial
 import time
+
+
+#cria uma função para detectar automaticamente a porta serial do ESP32
+def detectar_esp32():
+    import serial.tools.list_ports
+    ports = serial.tools.list_ports.comports()
+    for port in ports:
+        if "ESP32" in port.description or "Silicon Labs" in port.description:
+            return port.device
+    return None
 
 # Função para se conectar ao ESP32 via comunicação serial
 def conectar_esp32(porta, baudrate=9600):
@@ -56,14 +67,10 @@ def enviar_sequencia(ser, sequencia):
     else:
         print("Conexão serial não está aberta.")
 
+# Detecta a porta do ESP32 automaticamente
+porta = detectar_esp32()
 
-
-
-
-
-
-
-
+# Classe principal da aplicação GUI
 class ESP32InterfaceApp:
     def __init__(self, root):
         corprincipal= "#1a1a1a"  # Cor principal (preto)
@@ -163,7 +170,9 @@ class ESP32InterfaceApp:
         # Configuração da comunicação serial (ajuste conforme necessário)
         self.serial_port = None
         try:
-            self.serial_port = serial.Serial('COM3', 115200, timeout=1)  # Ajuste a porta e baudrate
+            self.serial_port = serial.Serial(porta, 115200, timeout=1)  # Ajuste a porta e baudrate
+            # executa a conexão na porta serial via o acionamento do botão toggle_switch
+            # self.toggle_switch
         except serial.SerialException:
             self.log_message("Erro: Não foi possível conectar ao ESP32.")
 
@@ -185,6 +194,7 @@ class ESP32InterfaceApp:
         #lembrar de descomentar a parte de baixo para enviar o comando para o ESP32
         #if self.serial_port and self.serial_port.is_open:
         if True:
+            # Descomente também as três linhas abaixo quando for executar no ESP32
             #command = f"LED{led_number}"
             #self.serial_port.write((command + "\n").encode())
             #self.log_message(f"Comando enviado: {command}")
@@ -206,7 +216,7 @@ class ESP32InterfaceApp:
                 elif self.led3_button['bg'] == "#ff0000":
                     self.led3_button['bg'] = "#808080"        
         else:
-            self.log_message("Erro: Porta serial não está conectada.")   
+            self.log_message("Erro: Porta serial não está conectada.")    
 
     
     
@@ -214,15 +224,13 @@ class ESP32InterfaceApp:
         if self.switch_button.config('text')[-1] == 'OFF':
             self.switch_button.config(text='ON', bg='green')
             self.switch_button.grid(row=1, column=1)
-            # Substitua pela porta correta
-            #porta = 'COM3' 
+            # Descomente quando usar no ESP32            
             #self.ser = conectar_esp32(porta) # Conecta no ESP32
         else:
             self.switch_button.config(text='OFF', bg='red')
             self.switch_button.grid(row=1, column=2)
+            # Descomente quando usar no ESP32 
             #self.ser.close() # Fecha a conexão
-
-
 
     def send_command(self):
         command = self.command_entry.get()
@@ -255,4 +263,3 @@ if __name__ == "__main__":
     root = tk.Tk()
     app = ESP32InterfaceApp(root)
     app.run()
-
